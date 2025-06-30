@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | UI/UX Developer</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#6366f1',secondary:'#a855f7'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        
+        :root {
+            --dark-bg: #121212;
+            --dark-surface: #1e1e1e;
+            --dark-surface-2: #2d2d2d;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+        }
+        
+        .section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 1000;
+        }
+        
+        .project-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .skill-progress {
+            position: relative;
+            height: 6px;
+            background-color: var(--dark-surface-2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .skill-progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 1.5s ease;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            background-color: var(--dark-surface-2);
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(99, 102, 241, 0.5);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+        }
+        
+        .cursor-hover {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+            }
+        }
+        
+        input:not([type="checkbox"]):not([type="radio"]),
+        textarea {
+            background-color: var(--dark-surface);
+            border: 1px solid var(--dark-surface-2);
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        input:not([type="checkbox"]):not([type="radio"]):focus,
+        textarea:focus {
+            border-color: var(--primary);
+        }
+        
+        .floating-label {
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            transition: all 0.3s;
+            pointer-events: none;
+            color: var(--text-secondary);
+        }
+        
+        input:focus + .floating-label,
+        input:not(:placeholder-shown) + .floating-label,
+        textarea:focus + .floating-label,
+        textarea:not(:placeholder-shown) + .floating-label {
+            top: -0.5rem;
+            left: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--primary);
+            background-color: var(--dark-bg);
+            padding: 0 0.25rem;
+        }
+        
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 70%;
+            height: 100vh;
+            background-color: var(--dark-surface);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+            
+            .desktop-nav {
+                display: none;
+            }
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(20px);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--dark-surface);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Remove default input styles */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark-surface);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--dark-surface-2);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+        
+        /* Set CSS variables for theme colors */
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+        }
+        .prjs { max-width: 100%; height: 100%; margin: 0 auto;}
+        #projectModal {
+         backdrop-filter: blur(6px);
+}
+
+.bg-dark-surface-2 {
+    background-color: #1e1e2f;
+}
+
+.border-dark-surface {
+    border-color: #2c2c3f;
+}
+.border-dark-surface-2 img {max-width: 100%;margin: 0 auto;}
+.p-6 .text-gray-300 {
+  max-width: 545px;
+}
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="custom-cursor" id="customCursor"></div>
+    
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 transition-all duration-300" id="header">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#home" class="text-2xl font-['Pacifico'] text-white">Sai Kiran</a>
+            
+            <nav class="desktop-nav">
+                <ul class="flex space-x-8">
+                    <li><a href="#home" class="text-gray-300 hover:text-primary transition-colors duration-300">Home</a></li>
+                    <li><a href="#projects" class="text-gray-300 hover:text-primary transition-colors duration-300">Projects</a></li>
+                    <li><a href="#skills" class="text-gray-300 hover:text-primary transition-colors duration-300">Skills</a></li>
+                    <li><a href="#about" class="text-gray-300 hover:text-primary transition-colors duration-300">About</a></li>
+                    <li><a href="#contact" class="text-gray-300 hover:text-primary transition-colors duration-300">Contact</a></li>
+                </ul>
+            </nav>
+            
+            <div class="hamburger w-6 h-6 flex flex-col justify-center space-y-1.5" id="hamburger">
+                <span class="block w-full h-0.5 bg-white transition-all duration-300"></span>
+                <span class="block w-full h-0.5 bg-white transition-all duration-300"></span>
+                <span class="block w-full h-0.5 bg-white transition-all duration-300"></span>
+            </div>
+        </div>
+    </header>
+    
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="flex flex-col space-y-6 text-center">
+            <li><a href="#home" class="text-xl text-gray-300 hover:text-primary transition-colors duration-300 mobile-link">Home</a></li>
+            <li><a href="#projects" class="text-xl text-gray-300 hover:text-primary transition-colors duration-300 mobile-link">Projects</a></li>
+            <li><a href="#skills" class="text-xl text-gray-300 hover:text-primary transition-colors duration-300 mobile-link">Skills</a></li>
+            <li><a href="#about" class="text-xl text-gray-300 hover:text-primary transition-colors duration-300 mobile-link">About</a></li>
+            <li><a href="#contact" class="text-xl text-gray-300 hover:text-primary transition-colors duration-300 mobile-link">Contact</a></li>
+        </ul>
+    </div>
+    
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center relative overflow-hidden">
+        <div class="particles" id="particles"></div>
+        <div class="container mx-auto px-6 py-24 relative z-10">
+            <div class="max-w-3xl">
+                <p class="text-primary mb-4 tracking-wider">UI/UX DEVELOPER</p>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6" id="heroText">
+                    <span class="block">Creating</span>
+                    <span class="block">Digital</span>
+                    <span class="block bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">Experiences</span>
+                </h1>
+                <p class="text-xl text-gray-300 mb-8 max-w-2xl">I design and develop exceptional digital experiences that are intuitive, accessible, and visually stunning. Transforming complex problems into elegant solutions.</p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#projects" class="bg-primary hover:bg-opacity-90 text-white px-8 py-3 !rounded-button whitespace-nowrap transition-all duration-300 inline-flex items-center">
+                        View My Work
+                        <i class="ri-arrow-right-line ml-2"></i>
+                    </a>
+                    <a href="#contact" class="border border-gray-600 hover:border-primary text-white px-8 py-3 !rounded-button whitespace-nowrap transition-all duration-300 inline-flex items-center">
+                        Get In Touch
+                    </a>
+                </div>
+                <div class="flex mt-12 space-x-6">
+                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark-surface-2 hover:bg-primary transition-all duration-300">
+                        <i class="ri-github-fill text-white"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark-surface-2 hover:bg-primary transition-all duration-300">
+                        <i class="ri-linkedin-fill text-white"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark-surface-2 hover:bg-primary transition-all duration-300">
+                        <i class="ri-facebook-fill text-white"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark-surface-2 hover:bg-primary transition-all duration-300">
+                        <i class="ri-instagram-line text-white"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Projects Section -->
+<section id="projects" class="py-24 section">
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-primary mb-2 tracking-wider">MY PORTFOLIO</p>
+      <h2 class="text-4xl font-bold mb-4">Featured Projects</h2>
+      <p class="text-gray-400 max-w-2xl mx-auto">
+        A showcase of my best work across UI/UX design and frontend development. Each project represents a unique challenge and solution.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projectsGrid">
+      <!-- Example Project Cards -->
+      <!-- HTML -->
+      <div class="project-card bg-dark-surface rounded-lg overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
+          <img src="images/html.png" alt="HTML Project" class="prjs">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">HTML</h3>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <button class="view-project text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300" data-id="1">View Details</button>
+        </div>
+      </div>
+
+      <!-- CSS -->
+      <div class="project-card bg-dark-surface rounded-lg overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
+          <img src="images/css.png" alt="CSS Project" class="prjs">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">CSS</h3>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <button class="view-project text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300" data-id="2">View Details</button>
+        </div>
+      </div>
+
+      <!-- JavaScript -->
+      <div class="project-card bg-dark-surface rounded-lg overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
+          <img src="images/javascript.png" alt="JavaScript Project" class="prjs">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">JavaScript</h3>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <button class="view-project text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300" data-id="3">View Details</button>
+        </div>
+      </div>
+
+      <!-- Bootstrap -->
+      <div class="project-card bg-dark-surface rounded-lg overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
+          <img src="images/bootstrap.png" alt="Bootstrap Project" class="prjs">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">Bootstrap</h3>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <button class="view-project text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300" data-id="4">View Details</button>
+        </div>
+      </div>
+
+      <!-- WordPress -->
+      <div class="project-card bg-dark-surface rounded-lg overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
+          <img src="images/wordpress.png" alt="WordPress Project" class="prjs">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">WordPress</h3>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <button class="view-project text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300" data-id="5">View Details</button>
+        </div>
+      </div>
+
+      <!-- Photoshop -->
+      <div class="project-card bg-dark-surface rounded-lg overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
+          <img src="images/adobe-photoshop.png" alt="Photoshop Project" class="prjs">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">Photoshop</h3>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <button class="view-project text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300" data-id="6">View Details</button>
+        </div>
+      </div>
+
+      <!-- Illustrator -->
+      <div class="project-card bg-dark-surface rounded-lg overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
+          <img src="images/illustrator.png" alt="Illustrator Project" class="prjs">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">Illustrator</h3>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <button class="view-project text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300" data-id="7">View Details</button>
+        </div>
+      </div>
+
+      <!-- Figma -->
+      <div class="project-card bg-dark-surface rounded-lg overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
+          <img src="images/figma.png" alt="Figma Project" class="prjs">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">Figma</h3>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <button class="view-project text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300" data-id="8">View Details</button>
+        </div>
+      </div>
+
+      <!-- React -->
+      <div class="project-card bg-dark-surface rounded-lg overflow-hidden">
+        <div class="relative h-64 overflow-hidden">
+          <img src="images/react-js.png" alt="React Project" class="prjs">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-1">React</h3>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <button class="view-project text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300" data-id="9">View Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    
+    <!-- Skills Section -->
+    <section id="skills" class="py-24 bg-dark-surface section">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <p class="text-primary mb-2 tracking-wider">MY EXPERTISE</p>
+                <h2 class="text-4xl font-bold mb-4">Professional Skills</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">A comprehensive overview of my technical abilities and professional expertise in UI/UX design and frontend development.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Skill Category 1: UI Design -->
+                <div class="bg-dark-surface p-8 rounded-lg hover:shadow-lg transition-all duration-300">
+                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-lg mb-6">
+                        <i class="ri-layout-4-line text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-6">UI Design</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Figma</span>
+                                <span class="text-sm text-primary">95%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="95"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Adobe XD</span>
+                                <span class="text-sm text-primary">90%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="90"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Illustrator</span>
+                                <span class="text-sm text-primary">85%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="85"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Photoshop</span>
+                                <span class="text-sm text-primary">80%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="80"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Skill Category 2: UX Research -->
+                <div class="bg-dark-surface p-8 rounded-lg hover:shadow-lg transition-all duration-300">
+                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-lg mb-6">
+                        <i class="ri-user-search-line text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-6">UX Research</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">User Testing</span>
+                                <span class="text-sm text-primary">90%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="90"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Wireframing</span>
+                                <span class="text-sm text-primary">95%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="95"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Prototyping</span>
+                                <span class="text-sm text-primary">85%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="85"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">User Personas</span>
+                                <span class="text-sm text-primary">80%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="80"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Skill Category 3: Frontend Development -->
+                <div class="bg-dark-surface p-8 rounded-lg hover:shadow-lg transition-all duration-300">
+                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-lg mb-6">
+                        <i class="ri-code-s-slash-line text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-6">Frontend Development</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">HTML/CSS</span>
+                                <span class="text-sm text-primary">98%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="98"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">JavaScript</span>
+                                <span class="text-sm text-primary">90%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="90"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Wordpress</span>
+                                <span class="text-sm text-primary">85%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="85"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">React</span>
+                                <span class="text-sm text-primary">80%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="80"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Me Section -->
+    <section id="about" >
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <p class="text-primary mb-2 tracking-wider">ABOUT ME</p>
+                <h2 class="text-4xl font-bold mb-4">My Journey</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Learn about my professional background, experience, and the passion that drives my work in UI/UX design and development.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="relative">
+                    <div class="relative z-10 rounded-lg overflow-hidden">
+                        <img src="images/Saikiran.png" alt="Alex Morgan - UI/UX Developer" class="w-full h-auto object-cover object-top">
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 w-2/3 h-2/3 bg-gradient-to-br from-primary to-secondary opacity-20 rounded-lg -z-10"></div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">Sai Kiran Malleti</h3>
+                    <p class="text-xl text-primary mb-6"> UI/UX Developer</p>
+                    
+                    <p class="text-gray-300 mb-6">I'm a passionate UI/UX developer with 6+ years of experience creating exceptional digital experiences. My approach combines aesthetic design with functional usability to deliver products that not only look great but perform brilliantly.</p>
+                    
+                    <p class="text-gray-300 mb-8">I specialize in translating complex requirements into intuitive interfaces that users love. My background in both design and development allows me to bridge the gap between aesthetics and functionality, ensuring seamless implementation of design concepts.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <p class="text-gray-400 mb-1">Name:</p>
+                            <p class="text-white">Sai Kiran Malleti</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 mb-1">Email:</p>
+                            <p class="text-white">saikiran88993@gmail.com</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 mb-1">Location:</p>
+                            <p class="text-white">Visakhapatnam, Andhra Pradesh</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 mb-1">Availability:</p>
+                            <p class="text-white">Freelance / Full-time</p>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="bg-primary hover:bg-opacity-90 text-white px-8 py-3 !rounded-button whitespace-nowrap transition-all duration-300 inline-flex items-center">
+                        Download Resume
+                        <i class="ri-download-line ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mt-24">
+                <h3 class="text-2xl font-bold mb-8 text-center">Education </h3>
+                
+                <div class="grid">
+                    <div class="timeline-item">
+                        <div class="bg-dark-surface p-6 rounded-lg">
+                            <span class="text-sm text-gray-400">Bachelors Degree  </span>
+                            <h4 class="text-xl font-bold mt-2 mb-1"> 2021 - 2024 </h4>
+                            <p class="text-primary mb-3">Unity Degree College</p>
+                            <p class="text-gray-300">A BSc Computer Science student masters programming, algorithms, and software development, focusing on problem-solving and gaining practical experience for tech industry roles</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="bg-dark-surface p-6 rounded-lg">
+                            <span class="text-sm text-gray-400">Intermediate</span>
+                            <h4 class="text-xl font-bold mt-2 mb-1">2019-21</h4>
+                            <p class="text-primary mb-3">BOARD OF INTERMEDIATE EDUCATION</p>
+                            <p class="text-gray-300">An intermediate student has a solid grasp of basic concepts and is expanding their knowledge and skills towards more advanced topics.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="bg-dark-surface p-6 rounded-lg">
+                            <span class="text-sm text-gray-400">SSC</span>
+                            <h4 class="text-xl font-bold mt-2 mb-1">2017-18</h4>
+                            <p class="text-primary mb-3">BOARD OF SECONDARY EDUCATION</p>
+                            <p class="text-gray-300"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-dark-surface section">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <p class="text-primary mb-2 tracking-wider">GET IN TOUCH</p>
+                <h2 class="text-4xl font-bold mb-4">Contact Me</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Have a project in mind or want to discuss potential opportunities? I'd love to hear from you. Let's create something amazing together.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div>
+                    <div class="bg-dark-surface p-8 rounded-lg mb-8">
+                        <div class="flex items-start mb-6">
+                            <div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mr-4">
+                                <i class="ri-map-pin-line text-xl text-primary"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold mb-1">Location</h4>
+                                <p class="text-gray-400">Visakhapatnam ,Andhra Pradesh</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start mb-6">
+                            <div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mr-4">
+                                <i class="ri-mail-line text-xl text-primary"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold mb-1">Email</h4>
+                                <p class="text-gray-400">saikiran88993@gmail.com</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mr-4">
+                                <i class="ri-phone-line text-xl text-primary"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold mb-1">Phone</h4>
+                                <p class="text-gray-400">+91 7569927622</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark-surface p-8 rounded-lg">
+                        <h3 class="text-xl font-bold mb-6">Connect With Me</h3>
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-dark-surface-2 hover:bg-primary transition-all duration-300">
+                                <i class="ri-github-fill text-white"></i>
+                            </a>
+                            <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-dark-surface-2 hover:bg-primary transition-all duration-300">
+                                <i class="ri-linkedin-fill text-white"></i>
+                            </a>
+                            <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-dark-surface-2 hover:bg-primary transition-all duration-300">
+                                <i class="ri-dribbble-fill text-white"></i>
+                            </a>
+                            <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-dark-surface-2 hover:bg-primary transition-all duration-300">
+                                <i class="ri-behance-fill text-white"></i>
+                            </a>
+                            <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-dark-surface-2 hover:bg-primary transition-all duration-300">
+                                <i class="ri-instagram-fill text-white"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-dark-surface p-8 rounded-lg">
+                    <h3 class="text-xl font-bold mb-6">Send Me a Message</h3>
+                    <form id="contactForm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="relative">
+                                <input type="text" id="name" class="w-full px-4 py-3 bg-dark-surface-2 rounded border-none focus:ring-2 focus:ring-primary outline-none transition-all duration-300 text-white" placeholder=" " required>
+                                <label for="name" class="floating-label">Your Name</label>
+                            </div>
+                            
+                            <div class="relative">
+                                <input type="email" id="email" class="w-full px-4 py-3 bg-dark-surface-2 rounded border-none focus:ring-2 focus:ring-primary outline-none transition-all duration-300 text-white" placeholder=" " required>
+                                <label for="email" class="floating-label">Your Email</label>
+                            </div>
+                        </div>
+                        
+                        <div class="relative mb-6">
+                            <input type="text" id="subject" class="w-full px-4 py-3 bg-dark-surface-2 rounded border-none focus:ring-2 focus:ring-primary outline-none transition-all duration-300 text-white" placeholder=" " required>
+                            <label for="subject" class="floating-label">Subject</label>
+                        </div>
+                        
+                        <div class="relative mb-6">
+                            <textarea id="message" rows="5" class="w-full px-4 py-3 bg-dark-surface-2 rounded border-none focus:ring-2 focus:ring-primary outline-none transition-all duration-300 text-white resize-none" placeholder=" " required></textarea>
+                            <label for="message" class="floating-label">Your Message</label>
+                        </div>
+                        
+                        <button type="submit" class="bg-primary hover:bg-opacity-90 text-white px-8 py-3 !rounded-button whitespace-nowrap transition-all duration-300 inline-flex items-center">
+                            Send Message
+                            <i class="ri-send-plane-line ml-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 bg-dark-surface-2">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <a href="#home" class="text-2xl font-['Pacifico'] text-white mb-6 md:mb-0">Sai Kiran</a>
+                
+                <div class="flex flex-wrap justify-center gap-6 mb-6 md:mb-0">
+                    <a href="#home" class="text-gray-400 hover:text-primary transition-colors duration-300">Home</a>
+                    <a href="#projects" class="text-gray-400 hover:text-primary transition-colors duration-300">Projects</a>
+                    <a href="#skills" class="text-gray-400 hover:text-primary transition-colors duration-300">Skills</a>
+                    <a href="#about" class="text-gray-400 hover:text-primary transition-colors duration-300">About</a>
+                    <a href="#contact" class="text-gray-400 hover:text-primary transition-colors duration-300">Contact</a>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark-surface hover:bg-primary transition-all duration-300">
+                        <i class="ri-github-fill text-white"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark-surface hover:bg-primary transition-all duration-300">
+                        <i class="ri-linkedin-fill text-white"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark-surface hover:bg-primary transition-all duration-300">
+                        <i class="ri-instagram-line text-white"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p class="text-gray-500">© 2025 Sai Kiran. All rights reserved.</p>
+                <p class="text-gray-600 text-sm mt-2">Last updated: June 23, 2025</p>
+            </div>
+        </div>
+    </footer>
+    
+    <div class="back-to-top" id="backToTop">
+        <i class="ri-arrow-up-line"></i>
+    </div>
+    
+<!-- Modal Structure -->
+<div id="projectModal" class="fixed inset-0 z-50 hidden bg-black/80 flex items-center justify-center">
+  <div class="bg-dark-surface max-w-4xl w-full rounded-lg overflow-y-auto max-h-[90vh] relative">
+    <button id="closeModal" class="absolute top-4 right-4 text-white text-2xl">&times;</button>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6" id="modalContent">
+      <!-- Dynamic Content Injected by JS -->
+    </div>
+  </div>
+</div>
+
+
+    
+    <!-- Scripts -->
+    <script id="particlesAnimation">
+        document.addEventListener('DOMContentLoaded', function() {
+            const particles = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size between 5px and 20px
+                const size = Math.random() * 15 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random opacity
+                particle.style.opacity = Math.random() * 0.5;
+                
+                // Random animation duration
+                particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
+                
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particles.appendChild(particle);
+            }
+        });
+    </script>
+    
+    <script id="heroAnimation">
+        document.addEventListener('DOMContentLoaded', function() {
+            const heroText = document.getElementById('heroText');
+            const spans = heroText.querySelectorAll('span');
+            
+            spans.forEach((span, index) => {
+                span.style.opacity = '0';
+                span.style.transform = 'translateY(20px)';
+                span.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                span.style.transitionDelay = `${index * 0.2}s`;
+                
+                setTimeout(() => {
+                    span.style.opacity = '1';
+                    span.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        });
+    </script>
+    
+    <script id="scrollAnimation">
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            const progressBar = document.getElementById('progressBar');
+            const backToTop = document.getElementById('backToTop');
+            
+            function checkScroll() {
+                // Update progress bar
+                const scrollPosition = window.scrollY;
+                const totalHeight = document.body.scrollHeight - window.innerHeight;
+                const progress = (scrollPosition / totalHeight) * 100;
+                progressBar.style.width = `${progress}%`;
+                
+                // Show/hide back to top button
+                if (scrollPosition > 500) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+                
+                // Animate sections on scroll
+                sections.forEach(section => {
+                    const sectionTop = section.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (sectionTop < windowHeight * 0.75) {
+                        section.classList.add('visible');
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', checkScroll);
+            
+            // Initial check
+            checkScroll();
+            
+            // Back to top functionality
+            backToTop.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+    
+    <script id="headerAnimation">
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.getElementById('header');
+            
+            function updateHeader() {
+                if (window.scrollY > 50) {
+                    header.classList.add('bg-dark-bg', 'shadow-lg');
+                } else {
+                    header.classList.remove('bg-dark-bg', 'shadow-lg');
+                }
+            }
+            
+            window.addEventListener('scroll', updateHeader);
+            
+            // Initial check
+            updateHeader();
+        });
+    </script>
+    
+    <script id="mobileMenuToggle">
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+            
+            hamburger.addEventListener('click', function() {
+                mobileMenu.classList.toggle('active');
+                
+                // Animate hamburger
+                const spans = hamburger.querySelectorAll('span');
+                if (mobileMenu.classList.contains('active')) {
+                    spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                    spans[1].style.opacity = '0';
+                    spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+                } else {
+                    spans[0].style.transform = 'none';
+                    spans[1].style.opacity = '1';
+                    spans[2].style.transform = 'none';
+                }
+            });
+            
+            // Close mobile menu when a link is clicked
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.remove('active');
+                    
+                    // Reset hamburger
+                    const spans = hamburger.querySelectorAll('span');
+                    spans[0].style.transform = 'none';
+                    spans[1].style.opacity = '1';
+                    spans[2].style.transform = 'none';
+                });
+            });
+        });
+    </script>
+    
+    <script id="skillsAnimation">
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.skill-progress-bar');
+            const counters = document.querySelectorAll('[id^="counter"]');
+            
+            function animateSkills() {
+                progressBars.forEach(bar => {
+                    const width = bar.getAttribute('data-width');
+                    bar.style.width = `${width}%`;
+                });
+            }
+            
+            function animateCounters() {
+                counters.forEach(counter => {
+                    const target = parseInt(counter.getAttribute('data-target'));
+                    const duration = 2000; // 2 seconds
+                    const increment = target / (duration / 16); // 60fps
+                    
+                    let current = 0;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        counter.textContent = Math.floor(current);
+                        
+                        if (current >= target) {
+                            counter.textContent = target;
+                            clearInterval(timer);
+                        }
+                    }, 16);
+                });
+            }
+            
+            // Create an Intersection Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (entry.target.id === 'skills') {
+                            animateSkills();
+                        }
+                        if (entry.target.querySelector('[id^="counter"]')) {
+                            animateCounters();
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            // Observe the skills section
+            observer.observe(document.getElementById('skills'));
+        });
+    </script>
+    
+    <script>
+const projectDetails = {
+  1: [
+    { title: "GreenEarth", image: "images/html.png", description: "", link: "https://saikiran77803.github.io/Green-Earth/" },
+    { title: "Flavour Hub", image: "images/html.png", description: "", link: "https://saikiran77803.github.io/Flavour-Hub/" }
+  ],
+  2: [
+    { title: "Car Showcase", image: "images/css.png", description: "", link: "https://saikiran77803.github.io/Car-showcase/" },
+    { title: "Travel", image: "images/css.png", description: "", link: "https://saikiran77803.github.io/Travel/" }
+  ],
+  3: [
+    { title: "Weather app", image: "images/javascript.png", description: "", link: "https://saikiran77803.github.io/Weather-app/" },
+    { title: "To-Do List", image: "images/javascript.png", description: "", link: "https://saikiran77803.github.io/To-do-list/"},
+    { title: "Digital Clock", image: "images/javascript.png", description: "", link: "https://saikiran77803.github.io/Digital-Clock/"
+     }
+  ],
+  4: [
+    { title: "Bikezone ", image: "images/bootstrap.png", description: "", link: "https://saikiran77803.github.io/Bikezone/" },
+    { title: "Restro", image: "images/bootstrap.png", description: "", link: "https://saikiran77803.github.io/Restro/" }
+  ],
+  5: [
+    { title: "WordPress Blog", image: "images/wordpress.png", description: "", link: "https://dev-neovelo.pantheonsite.io/" },
+  ],
+  6: [
+    { title: "Pizza Flyer", image: "images/adobe-photoshop.png", description: "", link: "images/Pizza-flyer.jpg" },
+    { title: "Food Flyer", image: "images/adobe-photoshop.png", description: "", link: "images/Food-flyer.jpg" },
+        { title: "Pizza poster", image: "images/adobe-photoshop.png", description: "", link: "images/Pizza-poster.jpg" },
+            { title: "Burger Web layout", image: "images/adobe-photoshop.png", description: "", link: "images/Burger-weblayout.pdf"},
+                { title: " Animation", image: "images/adobe-photoshop.png", description: "", link: "images/Walking-Gif.gif" }
+
+
+  ],
+  7: [
+        { title: "Flyer-1", image: "images/illustrator.png", description: "Travel Flyer design in Adobe Illustrator.", link: "images/Flyer-1.jpg" },
+    { title: "Flyer-2", image: "images/illustrator.png", description: "HIring flyer design in Adobe Illustrator.", link: "images/Flyer-2.jpg" },
+    { title: "Fashion stationery", image: "images/illustrator.png", description: "Modern flat icon design in Adobe Illustrator.", link: "images/Fashion-Stationery.pdf" },
+    { title: "Green Nature web layout", image: "images/illustrator.png", description: "Clean vector illustrations for product branding.", link: "images/Green-nature-weblayout.pdf" }
+  ],
+  8: [
+    { title: "Figma App Design", image: "images/figma.png", description: "Mobile app wireframe and prototype in Figma.", link: "https://example.com/figma-project1" },
+    { title: "Website Redesign", image: "images/figma.png", description: "Figma-based redesign for an e-commerce site.", link: "https://example.com/figma-project2" }
+  ],
+  9: [
+    { title: "React Todo App", image: "images/react-js.png", description: "Interactive todo list built in React.", link: "https://example.com/react-project1" },
+    { title: "React Portfolio", image: "images/react-js.png", description: "Component-based personal portfolio with routing.", link: "https://example.com/react-project2" }
+  ]
+};
+
+document.querySelectorAll(".view-project").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const id = btn.getAttribute("data-id");
+    const modalContent = document.getElementById("modalContent");
+    modalContent.innerHTML = "";
+
+    projectDetails[id]?.forEach(project => {
+      const item = document.createElement("div");
+      item.className = "bg-dark-surface-2 p-4 rounded-lg border border-dark-surface";
+      item.innerHTML = `
+        <img src="${project.image}" alt="${project.title}" class="w-full h-40 object-cover rounded mb-4">
+        <h4 class="text-lg font-semibold mb-2">${project.title}</h4>
+        <p class="text-gray-400 mb-4">${project.description}</p>
+        <a href="${project.link}" target="_blank" class="inline-block text-sm text-primary hover:text-white hover:bg-primary px-4 py-2 rounded border border-primary transition-all duration-300">View Project</a>
+      `;
+      modalContent.appendChild(item);
+    });
+
+    document.getElementById("projectModal").classList.remove("hidden");
+  });
+});
+
+document.getElementById("closeModal").addEventListener("click", () => {
+  document.getElementById("projectModal").classList.add("hidden");
+});
+</script>
+
+    
+    <script id="contactForm">
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contactForm');
+            
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value;
+                
+                // Validate form (simple validation)
+                if (!name || !email || !subject || !message) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                // Simulate form submission
+                const submitButton = contactForm.querySelector('button[type="submit"]');
+                const originalText = submitButton.innerHTML;
+                
+                submitButton.disabled = true;
+                submitButton.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Sending...
+                `;
+                
+                setTimeout(() => {
+                    // Reset form
+                    contactForm.reset();
+                    
+                    // Show success message
+                    submitButton.innerHTML = `
+                        <i class="ri-check-line mr-2"></i>
+                        Message Sent!
+                    `;
+                    submitButton.classList.remove('bg-primary');
+                    submitButton.classList.add('bg-green-500');
+                    
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        submitButton.innerHTML = originalText;
+                        submitButton.classList.remove('bg-green-500');
+                        submitButton.classList.add('bg-primary');
+                        submitButton.disabled = false;
+                    }, 3000);
+                }, 1500);
+            });
+        });
+    </script>
+    
+    <script id="customCursorEffect">
+        document.addEventListener('DOMContentLoaded', function() {
+            const cursor = document.getElementById('customCursor');
+            const links = document.querySelectorAll('a, button, .project-card, input, textarea');
+            
+            document.addEventListener('mousemove', function(e) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+            
+            links.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    cursor.classList.add('cursor-hover');
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    cursor.classList.remove('cursor-hover');
+                });
+            });
+            
+            // Hide default cursor
+            document.body.style.cursor = 'none';
+            
+            // Show default cursor on mobile devices
+            if (window.innerWidth <= 768) {
+                document.body.style.cursor = 'auto';
+                cursor.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
